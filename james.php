@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- er -->
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -13,12 +12,19 @@
     <link href="css/timepicker.css" rel="stylesheet">
 	<link href="css/bootstrap-wysihtml5.css" rel="stylesheet">
 	
+	<
 	<style>
+	/* Put space at the top of each header and section to make room for the nav bar */
 	header {
         padding-top: 60px;
     }
 	section {
         padding-top: 30px;
+    }
+    
+    /* Set Error Label to Red */
+    label.error { 
+    	color: red; 
     }
     </style>
 	
@@ -31,11 +37,10 @@
 	<script type="text/javascript" src="jquery.validate.min.js"></script>svn/trunk/html5.js"></script>
     <![endif]-->
 
+    <!-- event_success variable declared as false - This is for javascript at bottom of page that shows the success window -->
     <script>var event_success=false;</script>
 
     <?php
-    
-    $nextweek_date=date('d-m-Y', date('U') + (7 * 24 * 60 * 60));
 
 	// Get the eventarc library. Note this is VERSION 3 of the lib.
 	require_once __DIR__.'/api/Eventarc.php';
@@ -74,9 +79,9 @@
 				'u_id' => $u_id); // Your user id
 
 			$ticket = array(
-				't_name' => 'Paid ticket',
-				't_description' => 'You have to pay for this one',
-				't_total' => '200',
+				't_name' => $_POST['t_name'],
+				't_description' => '',
+				't_total' => $_POST['t_total'],
 				't_price' => '0',
 				't_earlybird' => '0', // Earlybird is off
 				't_order' => '2',
@@ -86,72 +91,48 @@
 			// Create the event
 			$e_data = $eventarc
 				->add_event($e_data) // Add the event data
-				->add_ticket_limit(1000) // Set a ticket limit of 2000 (THIS IS REQUIRED)
+				->add_ticket_limit(1000000) // Set a ticket limit of 2000 (THIS IS REQUIRED)
 				->add_ticket($ticket) // Add a ticket
 				->event_create(); // Create it
 
 			//die('Create event'.print_r($e_data,TRUE));
 			//echo '<a href="'.$e_data['url'].'" target="_blank">View event</a>';
 
+			// Set event_success to true apone succesful creation - this will activate the success window at bottom of page
 			echo "<script>event_success=true;</script>";
-			$create_error = array('error' => false);
 		}
-	}
-	catch(Eventarcapi_Exception $e)
-	{
-		//echo 'BAD times';
-		function element_text($element_name){
-			if($_POST[$element_name])
-			{
-				return $_POST[$element_name];
-			} 
-			else
-			{
-				return false;
-			}
-		}
-		function time_element_text($element_name){
-			if(isset($_POST[$element_name]))
-			{
-				return $_POST[$element_name];
-			}
-			else
-			{
-				return $nextweek_date;
-			}
-		}
-		$create_error = array(
-			'error' => true,
-				'e_name' => element_text('e_name'),
-				'e_start_date' => time_element_text('e_start_date'),
-				'e_stop_date' => time_element_text('e_stop_date'),
-				'e_deadline_date' => time_element_text('e_deadline_date'),
-				'e_description' => element_text('e_description'),
-				'ticketname' => element_text('ticketname'),
-				'ticketno' => element_text('ticketno')
-		);
-		var_dump($create_error);
-	}
-	$create_error = array('error' => false);
-	try
-	{
-		$event_list = $eventarc->event_listsummary();
-		//var_dump($event_list);
 	}
 	catch(Eventarcapi_Exception $e)
 	{
 		echo 'BAD times';
 		var_dump($e);
 	}
+
+	try
+	{
+		// download event list for the table
+		$event_list = $eventarc->event_listsummary();
+	}
+	catch(Eventarcapi_Exception $e)
+	{
+		echo 'BAD times';
+		var_dump($e);
+	}
+
+	// function used above to turn the raw time and date data into the server format
 	function convert_date_time($date, $time){
 		list($d,$m,$y) = explode("-", $date);
 		return sprintf('%4d-%02d-%02d',$y,$m,$d) . " " . DATE("H:i:s", STRTOTIME($time));
 	}
+
+	// define variable with the date of 7 days in advance from today - This is for code further down the page
+	$nextweek_date=date('d-m-Y', date('U') + (7 * 24 * 60 * 60));
 	?>
   </head>
 
   <body>
 
+  	<!-- Top Nav Bar -->
     <div class="navbar navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container">
@@ -173,6 +154,7 @@
       </div>
     </div>
 	
+	<!-- The Error Modal - This is set of by the generate error button -->	
 	<div class="modal hide" id="errorModal">
 		<div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal">×</button>
@@ -182,10 +164,11 @@
 			<p>An Error Occured!</p>
 		</div>
 		<div class="modal-footer">
-			<a href="#" class="btn" data-dismiss="modal">Close</a>
+			<a href="javascript:hide_error_modal()" class="btn" data-dismiss="modal">Close</a>
 		</div>
 	</div>
 
+	<!-- The Success Modal - This is activated in code below and is used to show that the event has be succesfully created --> 
 	<div class="modal hide" id="successModal">
 		<div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal">×</button>
@@ -196,16 +179,20 @@
 		</div>
 		<div class="modal-footer">
 			<a target='_blank' <?PHP echo 'href="' . $e_data['url'] . '"'; ?> class="btn btn-primary" >View Event</a>
-			<a href="#" class="btn" data-dismiss="modal">Close</a>
+			<a href="javascript:hide_sucess_modal()" class="btn" data-dismiss="modal">Close</a>
 		</div>
 	</div>
     
+    <!-- Start the page contents -->
 	<div class="container">
+
+		<!-- Sub Header at top of page -->
 		<header class="jumbotron subhead" id="overview">
 		<h1>Eventarc API</h1>
 		<p class="lead">Stuff</p>
 		</header>
 		
+		<!-- Table List Section of the Page -->
 		<section id="list">
 			<div class="page-header">
 				<h2>List Events</h2>
@@ -231,6 +218,8 @@
 							<th><span data-colour="green" data-diameter="30" class="piechart">Availablity - tp_count/to_total</span></th>
 						</tr>
 					-->
+
+					<!-- PHP that loops through the events list and adds an item to the table with structure above -->
 					<?PHP
 						for($event_no=0; $event_no<count($event_list); $event_no++)
 						{
@@ -242,26 +231,31 @@
 								echo "<th>" . $event_list[$event_no]["tp_count"] . "/" . $event_list[$event_no]["to_total"] . "</th>";
 								echo '<th><span data-colour="green" data-diameter="30" class="piechart">' . $event_list[$event_no]["tp_count"] . "/" . $event_list[$event_no]["to_total"] . "</span></th>";
 							echo "</tr>";
+							// Change the Pie Chart apperance above - data-diameter sets the diameter - data-colour sets the colour
 						}
 					?>
 				</tbody>
 			</table>
 		</section>
 		
+		<!-- Create new event section -->
 		<section id="create">
 			<div class="page-header">
 				<h2>Create Event</h2>
 			</div>
-			<form class="form-horizontal" method="POST" id="create_form">
+			<form class="form-horizontal" method="POST" action="james.php" id="create_form">
 				<fieldset>
-					<!-- <?PHP echo $create_error['e_name']; ?> -->
-					<div class="control-group"> <!-- Event Name -->
+
+					<!-- Event Name -->
+					<div class="control-group"> 
 						<label class="control-label" for="name">Event Name</label>
 						<div class="controls">
 							<input type="text" class="input-xlarge span10 required" id="name" name="e_name">
 						</div>
 					</div>
-					<div class="control-group"> <!-- Event Start Time -->
+
+					<!-- Event Start Time -->
+					<div class="control-group"> 
 						<label class="control-label" for="start">Event Start Time</label>
 						<div class="controls">
 							<input type="text" class="timepicker span5" data-provide="timepicker" name="e_start_time">
@@ -271,7 +265,9 @@
 							</div>
 						</div>
 					</div>
-					<div class="control-group">	<!-- Event End Time -->
+
+					<!-- Event End Time -->
+					<div class="control-group">	
 						<label class="control-label" for="end">Event End Time</label>
 						<div class="controls">
 							<input type="text" class="timepicker span5" data-provide="timepicker" name="e_stop_time">
@@ -281,7 +277,9 @@
 							</div>
 						</div>
 					</div>
-					<div class="control-group"> <!-- Registration Deadline -->	
+
+					<!-- Registration Deadline -->
+					<div class="control-group"> 	
 						<label class="control-label" for="registration">Registration Deadline</label>
 						<div class="controls">
 							<input type="text" class="timepicker span5" data-provide="timepicker" name="e_deadline_time">
@@ -291,26 +289,33 @@
 							</div>
 						</div>
 					</div>
-					<div class="control-group"> <!-- Event Describtion -->	
+
+					<!-- Event Describtion -->	
+					<div class="control-group"> 
 						<label class="control-label" for="description">Event Description</label>
 						<div class="controls">
-							<textarea class="richtexteditor span10" name="e_description"></textarea>
-							<!--<textarea class="input-xlarge inputwidth" id="description" rows="3"></textarea>-->
+							<textarea class="richtexteditor span10 required" name="e_description"></textarea>
 						</div>
 					</div>
-					<div class="control-group"> <!-- Ticket Name -->	
+
+					<!-- Ticket Name -->
+					<div class="control-group"> 	
 						<label class="control-label" for="ticketname">Ticket Name</label>
 						<div class="controls">
-							<input type="text" class="input-xlarge span10" id="ticketname" name="ticketname">
+							<input type="text" class="input-xlarge span10 required" id="ticketname" name="t_name">
 						</div>
 					</div>
-					<div class="control-group"> <!-- Number of Tickets Available -->	
+
+					<!-- Number of Tickets Available -->	
+					<div class="control-group"> 
 						<label class="control-label" for="ticketno">Number of Tickets Available</label>
 						<div class="controls">
-							<input type="number" class="input-xlarge span10" id="ticketno" name="ticketno">
+							<input type="number" class="input-xlarge span10 digits required" id="ticketno" name="t_total">
 						</div>
 					</div>
-					<div class="form-actions span10"> <!-- Submit Button -->
+
+					<!-- Submit Button -->
+					<div class="form-actions span10"> 
 						<a href="javascript:form_validate()" class="btn btn-large btn-primary">Submit</a>
 						<a data-toggle="modal" href="#errorModal" class="btn btn-large btn-primary">Generate Error</a>
 					</div>
@@ -359,6 +364,7 @@
 	<!-- Pie Chart -->
 	<script src="js/jquery.peity.min.js"></script>
 	<script>
+		// Function gets the data-colour and data-diameter properties and changes the pie graph apperance
 		$(function(){
 			$(".piechart").peity("pie", {
 				colours: function() {
@@ -378,6 +384,7 @@
 	<script type="text/javascript" src="js/wysiwyg/wysiwyg.link.js"></script>
 	<script type="text/javascript" src="js/wysiwyg/wysiwyg.table.js"></script>
 	<script>
+		// Function creates the rich text editor on page ready
 		$(document).ready( function () {
 			$('.richtexteditor').wysiwyg();
 		});
@@ -385,25 +392,36 @@
 	
 	<!-- Modals -->
 	<script>
+		// Creates the error modal on page ready
 		$(document).ready( function () {
 			$('#errorModal').modal({
 				show: false
 			});
 		});
+
+		// creates the success modal but only shows if event_success is true - This is set above
 		$(document).ready( function () {
 			$('#successModal').modal({
 				show: event_success
 			});
 		});
+
+		// Functions that hide the modals 
+		function hide_error_modal(){
+			$('#errorModal').modal('hide');
+		}
+		function hide_sucess_modal(){
+			$('#successModal').modal('hide');
+		}
 	</script>
 
 	<!-- Form Validation -->
-    <!--<script type="text/javascript" src="jquery-1.3.2.js"></script>-->
-
-
 	<script>
+		// Function that is run when submit button is clicked. It first finds if the form is valid, if it is it submits the form with jquery, if it isn't the form validation is shown.
 		function form_validate(){
-			console.log($("#create_form").valid());
+			if($("#create_form").valid()){
+				$("#create_form").submit();
+			}
 		}
 	</script>
   </body>
