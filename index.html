@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Eventarc API</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <link href="css/timepicker.css" rel="stylesheet">
+	<link href="css/bootstrap-wysihtml5.css" rel="stylesheet">
+	
+	<style>
+    header, section {
+        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+    }
+	section {
+        padding-top: 30px; /* 60px to make the container go all the way to the bottom of the topbar */
+    }
+	
+	.inputwidth {
+		width: 400px
+	}
+	.timewidth {
+		width: 195px
+	}
+    </style>
+	
+    <link href="css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="ico/favicon.ico">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="ico/apple-touch-icon-57-precomposed.png">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="#">Eventarc API</a>
+          <div class="nav-collapse">
+            <ul class="nav">
+				<li class="divider-vertical"></li>
+				<li class><a href="#">Home</a></li>
+				<li class><a href="#list">List Events</a></li>
+				<li class><a href="#create">Create Event</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+	
+	<div class="modal hide" id="errorModal">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal">×</button>
+			<h3>Error</h3>
+		</div>
+		<div class="modal-body">
+			<p>An Error Occured!</p>
+		</div>
+		<div class="modal-footer">
+			<a href="#" class="btn" data-dismiss="modal">Close</a>
+		</div>
+	</div>
+    
+	<div class="container">
+		<header class="jumbotron subhead" id="overview">
+		<h1>Eventarc API</h1>
+		<p class="lead">Stuff</p>
+		</header>
+		
+		<section id="list">
+			<div class="page-header">
+				<h2>List Events</h2>
+			</div>
+			<table class="table table-bordered">
+				<thead>
+				<tr>
+					<th>Event Name</th>
+					<th>URL</th>
+					<th>Event Date</th>
+					<th>Attendees</th>
+					<th colspan="2">Availability</th>
+				</tr>
+			</thead>
+				<tbody>
+					<tr>
+						<th>Test</th>
+						<th>Test</th>
+						<th>Test</th>
+						<th>Test</th>
+						<th>151/525</th>
+						<th><span data-colour="green" data-diameter="30" class="piechart">151/525</span></th>
+					</tr>
+				</tbody>
+			</table>
+		</section>
+		
+		<section id="create">
+			<div class="page-header">
+				<h2>Create Event</h2>
+			</div>
+			<form class="form-horizontal">
+				<fieldset>
+					<div class="control-group"> <!-- Event Name -->
+						<label class="control-label" for="name">Event Name</label>
+						<div class="controls">
+							<input type="text" class="input-xlarge inputwidth" id="name">
+						</div>
+					</div>
+					<div class="control-group"> <!-- Event Start Time -->
+						<label class="control-label" for="start">Event Start Time</label>
+						<div class="controls">
+							<input type="text" class="timepicker timewidth" data-provide="timepicker">
+							<div class="input-append date" id="start" data-date="12-02-2012" data-date-format="dd-mm-yyyy">
+								<input class="span2" size="16" type="text" value="12-02-2012" readonly>
+								<span class="add-on"><i class="icon-th"></i></span>
+							</div>
+						</div>
+					</div>
+					<div class="control-group">	<!-- Event End Time -->
+						<label class="control-label" for="end">Event End Time</label>
+						<div class="controls">
+							<input type="text" class="timepicker timewidth" data-provide="timepicker">
+							<div class="input-append date" id="end" data-date="12-02-2012" data-date-format="dd-mm-yyyy">
+								<input class="span2" size="16" type="text" value="12-02-2012" readonly>
+								<span class="add-on"><i class="icon-th"></i></span>
+							</div>
+						</div>
+					</div>
+					<div class="control-group"> <!-- Registration Deadline -->	
+						<label class="control-label" for="registration">Registration Deadline</label>
+						<div class="controls">
+							<input type="text" class="timepicker timewidth" data-provide="timepicker">
+							<div class="input-append date" id="registration" data-date="12-02-2012" data-date-format="dd-mm-yyyy">
+								<input class="span2" size="16" type="text" value="12-02-2012" readonly>
+								<span class="add-on"><i class="icon-th"></i></span>
+							</div>
+						</div>
+					</div>
+					<div class="control-group"> <!-- Event Describtion -->	
+						<label class="control-label" for="description">Event Description</label>
+						<div class="controls">
+							<textarea class="richtexteditor inputwidth" placeholder="Enter text ..."></textarea>
+							<!--<textarea class="input-xlarge inputwidth" id="description" rows="3"></textarea>-->
+						</div>
+					</div>
+					<div class="control-group"> <!-- Ticket Name -->	
+						<label class="control-label" for="ticketname">Ticket Name</label>
+						<div class="controls">
+							<input type="text" class="input-xlarge inputwidth" id="ticketname">
+						</div>
+					</div>
+					<div class="control-group"> <!-- Number of Tickets Available -->	
+						<label class="control-label" for="ticketno">Number of Tickets Available</label>
+						<div class="controls">
+							<input type="number" class="input-xlarge inputwidth" id="ticketno">
+						</div>
+					</div>
+					<div class="form-actions inputwidth"> <!-- Submit Button -->
+						<button class="btn btn-large btn-primary">Submit</button>
+						<a data-toggle="modal" href="#errorModal" class="btn btn-large btn-primary">Generate Error</a>
+					</div>
+				</fieldset>
+			</form>
+		</section>
+
+    </div> <!-- /container -->
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery.js"></script>
+    <script src="js/bootstrap-transition.js"></script>
+    <script src="js/bootstrap-alert.js"></script>
+    <script src="js/bootstrap-modal.js"></script>
+    <script src="js/bootstrap-dropdown.js"></script>
+    <script src="js/bootstrap-scrollspy.js"></script>
+    <script src="js/bootstrap-tab.js"></script>
+    <script src="js/bootstrap-tooltip.js"></script>
+    <script src="js/bootstrap-popover.js"></script>
+    <script src="js/bootstrap-button.js"></script>
+    <script src="js/bootstrap-collapse.js"></script>
+    <script src="js/bootstrap-carousel.js"></script>
+    <script src="js/bootstrap-typeahead.js"></script>
+
+	<!-- Date Picker -->
+	<script src="js/bootstrap-datepicker.js"></script>
+	<script src="js/bootstrap-timepicker.js"></script>
+	<script>
+		$(document).ready(function () {
+			$('#start').datepicker();
+			$('#end').datepicker();
+			$('#registration').datepicker();
+			$('.timepicker').timepicker({
+                defaultTime: 'current',
+                minuteStep: 15,
+                disableFocus: true,
+                template: 'modal'
+            });
+		});
+	</script>
+	
+	<!-- Pie Chart -->
+	<script src="js/jquery.peity.min.js"></script>
+	<script>
+		$(function(){
+			$(".piechart").peity("pie", {
+				colours: function() {
+					return ["#dddddd", this.getAttribute("data-colour")]
+				},
+				diameter: function() {
+					return this.getAttribute("data-diameter")
+				}
+			});
+		});
+	</script>
+	
+	<!-- Rich-text Editor -->
+	<link rel="stylesheet" href="css/jquery.wysiwyg.css" type="text/css"/>
+	<script type="text/javascript" src="js/wysiwyg/jquery.wysiwyg.js"></script>
+	<script type="text/javascript" src="js/wysiwyg/wysiwyg.image.js"></script>
+	<script type="text/javascript" src="js/wysiwyg/wysiwyg.link.js"></script>
+	<script type="text/javascript" src="js/wysiwyg/wysiwyg.table.js"></script>
+	<script>
+		$(document).ready( function () {
+			$('.richtexteditor').wysiwyg();
+		});
+	</script>
+	
+	<!-- Error Modal -->
+	<script>
+		$(document).ready( function () {
+			$('#errorModal').modal({
+				show: false
+			});
+		});
+		function errorModal(){
+			
+		}
+	</script>
+  </body>
+</html>
