@@ -11,7 +11,8 @@
     <link href="css/bootstrap.css" rel="stylesheet">
     <link href="css/timepicker.css" rel="stylesheet">
 	<link href="css/bootstrap-wysihtml5.css" rel="stylesheet">
-	
+	<link href="css/datepicker.css" rel="stylesheet">
+
 	<
 	<style>
 	/* Put space at the top of each header and section to make room for the nav bar */
@@ -249,7 +250,7 @@
 					<!-- Event Name -->
 					<div class="control-group"> 
 						<label class="control-label" for="name">Event Name</label>
-						<div class="controls">
+						<div id="name_controls" class="controls">
 							<input type="text" class="input-xlarge span10 required" id="name" name="e_name">
 						</div>
 					</div>
@@ -257,10 +258,10 @@
 					<!-- Event Start Time -->
 					<div class="control-group"> 
 						<label class="control-label" for="start">Event Start Time</label>
-						<div class="controls">
+						<div id="start_input_controls" class="controls">
 							<input type="text" class="timepicker span5" data-provide="timepicker" name="e_start_time">
 							<div class="input-append date" id="start" data-date="<?PHP echo $nextweek_date; ?>" data-date-format="dd-mm-yyyy">
-								<input class="span5" size="16" type="text" value="<?PHP echo $nextweek_date; ?>" readonly name="e_start_date">
+								<input id="start_input" class="span5 futuretime" size="16" type="text" value="<?PHP echo $nextweek_date; ?>" readonly name="e_start_date">
 								<span class="add-on"><i class="icon-th"></i></span>
 							</div>
 						</div>
@@ -269,10 +270,10 @@
 					<!-- Event End Time -->
 					<div class="control-group">	
 						<label class="control-label" for="end">Event End Time</label>
-						<div class="controls">
+						<div id="end_input_controls" class="controls">
 							<input type="text" class="timepicker span5" data-provide="timepicker" name="e_stop_time">
 							<div class="input-append date" id="end" data-date="<?PHP echo $nextweek_date; ?>" data-date-format="dd-mm-yyyy">
-								<input class="span5" size="16" type="text" value="<?PHP echo $nextweek_date; ?>" readonly name="e_stop_date">
+								<input id="end_input" class="span5 futuretime" size="16" type="text" value="<?PHP echo $nextweek_date; ?>" readonly name="e_stop_date">
 								<span class="add-on"><i class="icon-th"></i></span>
 							</div>
 						</div>
@@ -281,27 +282,28 @@
 					<!-- Registration Deadline -->
 					<div class="control-group"> 	
 						<label class="control-label" for="registration">Registration Deadline</label>
-						<div class="controls">
+						<div id="registration_input_controls" class="controls">
 							<input type="text" class="timepicker span5" data-provide="timepicker" name="e_deadline_time">
 							<div class="input-append date" id="registration" data-date="<?PHP echo $nextweek_date; ?>" data-date-format="dd-mm-yyyy">
-								<input class="span5" size="16" type="text" value="<?PHP echo $nextweek_date; ?>" readonly name="e_deadline_date">
+								<input id="registration_input" class="span5 futuretime" size="16" type="text" value="<?PHP echo $nextweek_date; ?>" readonly name="e_deadline_date">
 								<span class="add-on"><i class="icon-th"></i></span>
 							</div>
+							<!--<label class="error" for="e_deadline_date" generated="true">Please pick a date in the future</label>-->
 						</div>
 					</div>
 
 					<!-- Event Describtion -->	
 					<div class="control-group"> 
 						<label class="control-label" for="description">Event Description</label>
-						<div class="controls">
-							<textarea class="richtexteditor span10 required" name="e_description"></textarea>
+						<div id="description_controls" class="controls">
+							<textarea id="description" class="richtexteditor span10 required" name="e_description"></textarea>
 						</div>
 					</div>
 
 					<!-- Ticket Name -->
 					<div class="control-group"> 	
 						<label class="control-label" for="ticketname">Ticket Name</label>
-						<div class="controls">
+						<div id="ticketname_controls" class="controls">
 							<input type="text" class="input-xlarge span10 required" id="ticketname" name="t_name">
 						</div>
 					</div>
@@ -309,7 +311,7 @@
 					<!-- Number of Tickets Available -->	
 					<div class="control-group"> 
 						<label class="control-label" for="ticketno">Number of Tickets Available</label>
-						<div class="controls">
+						<div id="ticketno_controls" class="controls">
 							<input type="number" class="input-xlarge span10 digits required" id="ticketno" name="t_total">
 						</div>
 					</div>
@@ -354,9 +356,9 @@
 			$('#registration').datepicker();
 			$('.timepicker').timepicker({
                 defaultTime: 'current',
-                minuteStep: 15,
+                minuteStep: 1,
                 disableFocus: true,
-                template: 'modal'
+                template: 'dropdown'
             });
 		});
 	</script>
